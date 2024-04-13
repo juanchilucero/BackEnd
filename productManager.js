@@ -1,6 +1,25 @@
+const fs = require('fs');
+
+//despues de agregar fs inicializamos el constructor
 class ProductManager {
-    constructor() {
-        this.products = []; // creamos la lista vacia
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.loadProducts();
+    }
+
+    //agregamos la funcion de traer los productos ya existentes en el json
+    loadProducts() {
+        try {
+            const data = fs.readFileSync(this.filePath);
+            this.products = JSON.parse(data); // importante parsear los datos que si no no va la cosa
+        } catch (error) {
+            this.products = []; //agarramos cualquier error y dejamos vacio
+        }
+    }
+    //agregamos funcion para guardar los datos de nuestro array en el json
+    saveProducts() {
+        const data = JSON.stringify(this.products, null, 2);
+        fs.writeFileSync(this.filePath, data);
     }
 
     getProducts() {
@@ -8,21 +27,18 @@ class ProductManager {
     }
 
     addProduct(title, description, price, thumbnail, code, stock) {
-        // validar que todos los campos tengan algo
         if ([title, description, price, thumbnail, code, stock].some(field => field === undefined)) {
-            console.error('Todos los campos deben estar definidos.');
+            console.error('Todos los campos deben estar definidos.'); // validamos que todos los campos tengan algo
             return;
         }
-
-        // verificacion si el codigo ya existe
+    
         const codeExists = this.products.some(product => product.code === code);
         if (codeExists) {
-            console.error('El codigo ya existe en otro producto');
+            console.error('El código ya existe en otro producto'); //corroboramos que no se repita el mismo producto
             return;
         }
-
-        const id = this.products.length + 1;
-
+    
+        const id = this.generateId(); // esto lo modificare abajo porque me da problemas con lo agregado recientemente
         const product = {
             id,
             title,
@@ -32,13 +48,35 @@ class ProductManager {
             code,
             stock
         };
-
-        // agregar producto
         this.products.push(product);
-
-        return {products: this.products }; // devuelve lista de productos
+        this.saveProducts();
+        return product;
+    }
+    
+    //funcion id unico logica: que no se repita el id
+    generateId() {
+        let maxId = 0;
+        for (const product of this.products) {
+            if (product.id > maxId) {
+                maxId = product.id;
+            }
+        }
+        return maxId + 1; // dependiendo de los id que tenga genero el id con el numero siguiente, lo malo si tengo id 2 y no tengo id 1, igual me crea id 3, pero por ahora soluciono id
+    }
+    
+    // nueva funcion, elimina un producto
+    deleteProduct(code) {
+        const index = this.products.findIndex(product => product.code === code);
+        if (index === -1) {
+            console.error('El producto con el código ingresado no existe.'); //agregamos la opcion de que no exista el codigo
+            return;
+        }
+        this.products.splice(index, 1);
+        this.saveProducts();
+        console.log(`Producto con código ${code} eliminado.`);// proporciona el codigo del producto que eliminamos
     }
 
+    // buscar producto por id
     getProductById(id) {
         const product = this.products.find(product => product.id === id);
         if (!product) {
@@ -48,43 +86,22 @@ class ProductManager {
     }
 }
 
+// Ejemplo de uso:
+const manager = new ProductManager('productos.json');
 
-// pruebas
-const manager = new ProductManager();
-console.log("------------trae products por primera vez vacio------------");
-console.log(manager.getProducts()); // []
+// Agregar productos
+manager.addProduct("Producto 1", "Descripción del producto 1", 100, "thumbnail1.jpg", "ABC123", 10);
+manager.addProduct("Producto 2", "Descripción del producto 2", 200, "thumbnail2.jpg", "DEF456", 20);
 
-// // Debería imprimir el nuevo producto agregado
-const newProduct = manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
-console.log("------------agregamos productos------------");
-console.log(newProduct); 
+// Mostrar productos
+console.log("Productos:", manager.getProducts());
 
-// mostrar productos
-console.log("------------comando mostar productos agregados------------");
-console.log(manager.getProducts());
+// Eliminar producto
+manager.deleteProduct("ABC123");
 
-// probando errores
-console.log("------------probando error producto repetido------------");
-try {
-manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
-} catch (error) {
-  console.error(error.message); // deberia devolver el error
-}
+// Mostrar productos después de eliminar
+console.log("Productos después de eliminar:", manager.getProducts());
 
-// prueba getProductById
-console.log("------------prueba getProductById------------");
-try {
-    console.log(manager.getProductById(1)); // esto deberia imprimir el producto 1
-} catch (error) {
-    console.error(error.message); // catch de error
-}
-
-// prueba getProductById no existente
-console.log("------------Prueba getProductById con id no existente------------");
-try {
-    console.log(manager.getProductById(2)); // se puede reemplazar el id 2 por cualquier id que coloquemos
-} catch (error) {
-    console.error(error.message); // catch error
-}
-
-// por ultimo si corremos node "productManager.js" en la consola nos tira todas las pruebas del codigo
+// Limpiar json
+// manager.deleteProduct("DEF456");
+// si quieren limpiar el json de esta prueba descomentar el de arriba para dejar sin productos, queda pendiente funcion para vaciar el json
