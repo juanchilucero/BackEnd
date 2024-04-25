@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "e-commerce curso backend",
-  "type": "module",
-  "main": "productManager.js",
+  "type": "commonjs",
+  "main": "app.js",
   "scripts": {
-    "start": "node ./productManager.js",
-    "dev": "nodemon ./productManager.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "author": "Lucero Juan",
   "license": "ISC",

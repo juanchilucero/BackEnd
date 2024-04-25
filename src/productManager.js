@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs'); // por algun motivo tengo que cambiar el package json a commonjs porque sino no me toma el fs
 
 //despues de agregar fs inicializamos el constructor
 class ProductManager {
@@ -86,21 +86,24 @@ class ProductManager {
     }
 }
 
+
+
+module.exports = ProductManager
 // Ejemplo de uso:
-const manager = new ProductManager('productos.json');
+//const manager = new ProductManager('productos.json');
 
 // Agregar productos
-manager.addProduct("Producto 1", "Descripción del producto 1", 100, "thumbnail1.jpg", "ABC123", 10);
-manager.addProduct("Producto 2", "Descripción del producto 2", 200, "thumbnail2.jpg", "DEF456", 20);
+//manager.addProduct("Producto 1", "Descripción del producto 1", 100, "thumbnail1.jpg", "ABC123", 10);
+//manager.addProduct("Producto 2", "Descripción del producto 2", 200, "thumbnail2.jpg", "DEF456", 20);
 
 // Mostrar productos
-console.log("Productos:", manager.getProducts());
+//console.log("Productos:", manager.getProducts());
 
 // Eliminar producto
-manager.deleteProduct("ABC123");
+//manager.deleteProduct("ABC123");
 
 // Mostrar productos después de eliminar
-console.log("Productos después de eliminar:", manager.getProducts());
+//console.log("Productos después de eliminar:", manager.getProducts());
 
 // Limpiar json
 // manager.deleteProduct("DEF456");
