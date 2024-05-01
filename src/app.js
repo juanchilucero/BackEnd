@@ -1,5 +1,7 @@
-const express = require('express');
-const ProductManager = require('./productManager'); // no reinvento la rueda, traigo el product manager del otro archivo
+import express from "express"
+import ProductManager from "./productManager.js";
+;
+ // no reinvento la rueda, traigo el product manager del otro archivo
 
 const app = express();
 const port = 8080; //defino puerto

@@ -1,7 +1,7 @@
-const fs = require('fs'); // por algun motivo tengo que cambiar el package json a commonjs porque sino no me toma el fs
+import fs from "fs"; // por algun motivo tengo que cambiar el package json a commonjs porque sino no me toma el fs
 
 //despues de agregar fs inicializamos el constructor
-class ProductManager {
+export default class ProductManager {
     constructor(filePath) {
         this.filePath = filePath;
         this.loadProducts();
@@ -88,7 +88,6 @@ class ProductManager {
 
 
 
-module.exports = ProductManager
 // Ejemplo de uso:
 //const manager = new ProductManager('productos.json');
 
