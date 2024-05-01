@@ -1,6 +1,6 @@
 // productsController.js
 import fs from "fs";
-import Product from "../models/Product.js";
+import Product from "../models/Products.js";
 
 
 // creamos funcion de lectura
@@ -58,6 +58,10 @@ const productsController = {
   addProduct: (req, res) => {
     try {
       const { title, description, code, price, status, stock, category, thumbnails } = req.body; //traemos la info del body
+
+      if (!id || !title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
+        throw new Error("Todos los campos son obligatorios.");
+      }//validamos que tenga todo
 
       const products = readProductsFile();
 

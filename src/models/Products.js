@@ -1,6 +1,9 @@
 // Product.js
-class Product {
+export default class Product {
     constructor(id, title, description, code, price, status, stock, category, thumbnails) {
+
+
+
       this.id = id;
       this.title = title;
       this.description = description;
@@ -15,5 +18,4 @@ class Product {
   // este archivo nos servira mas adelante para funciones
 
 
-  export default Product;
   
