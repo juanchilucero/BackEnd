@@ -16,8 +16,8 @@ const writeProductsFile = (products) => {
 
 // generador de id
 const generateUniqueId = () => {
-  const randomString = Math.random().toString(36).substr(2, 5); // generamos 5 caracteres aleatorios
-  return randomString;
+  const randomNumber = Math.floor(10000 + Math.random() * 90000); // generamos numero aleatorio
+  return randomNumber; // agarramos 5 digitos
 };
 
 
@@ -57,9 +57,9 @@ const productsController = {
 
   addProduct: (req, res) => {
     try {
-      const { title, description, code, price, status, stock, category, thumbnails } = req.body; //traemos la info del body
+      const { title, description, code, price, status, stock, category, thumbnail } = req.body; //traemos la info del body
 
-      if (!id || !title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
+      if (!title || !description || !code || !price || !status || !stock || !category || !thumbnail) {
         throw new Error("Todos los campos son obligatorios.");
       }//validamos que tenga todo
 
@@ -72,7 +72,7 @@ const productsController = {
   
 
       // crea nuevo producto
-      const newProduct = new Product(newProductId, title, description, code, price, status || true, stock, category, thumbnails);
+      const newProduct = new Product(newProductId, title, description, code, price, status || true, stock, category, thumbnail);
 
       // agregamos el producto
       products.push(newProduct);

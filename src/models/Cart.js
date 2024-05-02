@@ -1,26 +1,45 @@
-export default class Cart {
-  constructor() {
-    this.id = generateUniqueId(); // Generar un ID único para el carrito
+
+
+import fs from "fs";
+
+class Cart {
+  constructor(id) {
+    this.id = id;
     this.products = [];
   }
 
-  addProduct(productId, quantity) {
-    // Buscar si el producto ya está en el carrito
-    const existingProduct = this.products.find((product) => product.productId === productId);
+  addProduct(productId) {
 
-    if (existingProduct) {
-      // Si el producto ya está en el carrito, aumentar la cantidad
-      existingProduct.quantity += quantity;
+    const productsData = fs.readFileSync("./src/data/productos.json", "utf8");
+    const products = JSON.parse(productsData);
+    
+
+    const product = products.find((p) => p.id === productId);
+  
+    if (!product) {
+      throw new Error("El producto no existe.");
+    }
+    
+
+    const existingProductIndex = this.products.findIndex(
+      (item) => item.productId === productId
+    );
+  
+    if (existingProductIndex !== -1) {
+
+      this.products[existingProductIndex].quantity++;
+      console.log("La cantidad del producto existente se incrementó:", this.products[existingProductIndex].quantity);
     } else {
-      // Si el producto no está en el carrito, agregarlo
-      this.products.push({ productId, quantity });
+
+      this.products.push({
+        productId: productId,
+        quantity: 1
+      });
+      console.log("Producto agregado al carrito con cantidad 1");
     }
   }
-
-  removeProduct(productId) {
-    // Filtrar los productos del carrito para eliminar el producto especificado
-    this.products = this.products.filter((product) => product.productId !== productId);
-  }
-
-  // Otros métodos para actualizar la cantidad de un producto, vaciar el carrito, etc.
+  
+  
 }
+
+export default Cart;

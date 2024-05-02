@@ -1,6 +1,6 @@
 // Product.js
 export default class Product {
-    constructor(id, title, description, code, price, status, stock, category, thumbnails) {
+    constructor(id, title, description, code, price, status, stock, category, thumbnail) {
 
 
 
@@ -12,7 +12,7 @@ export default class Product {
       this.status = status;
       this.stock = stock;
       this.category = category;
-      this.thumbnails = thumbnails;
+      this.thumbnail = thumbnail;
     }
   }
   // este archivo nos servira mas adelante para funciones
