@@ -1,5 +1,5 @@
-import fs from "fs";
-import Cart from "../models/Cart.js";
+//import fs from "fs";
+//import Cart from "../models/Cart.js";
 
 
 const readCartFile = () => {

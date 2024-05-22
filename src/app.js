@@ -1,9 +1,12 @@
 import express from "express";
 import productsRoutes from "./routes/products.routes.js";
 import cartsRoutes from "./routes/carts.routes.js";
+import { connectMongoDb } from './config/mongoDb.config.js';
 
 const app = express();
 const PORT = 8080;
+
+connectMongoDb();
 
 app.use(express.json());
 

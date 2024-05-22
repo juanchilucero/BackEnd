@@ -16,6 +16,3 @@ export default class Product {
     }
   }
   // este archivo nos servira mas adelante para funciones
-
-
-  

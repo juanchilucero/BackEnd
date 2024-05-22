@@ -1,6 +1,6 @@
 // productsController.js
-import fs from "fs";
-import Product from "../models/Products.js";
+//import fs from "fs";
+//import Product from "../models/Products.js";
 
 
 // creamos funcion de lectura
