@@ -1,24 +1,32 @@
-// src/dao/controllers/productsController.js
-
 import Product from '../models/Products.js';
 
 const productsController = {
-  // Obtener todos los productos con filtros, paginación y ordenamiento
+  // Obtener todos los productos
   getProducts: async (req, res) => {
     try {
-      const { limit = 10, page = 1, sort, query } = req.query;
+      const { limit, page, sort, category, status } = req.query;
 
-      // Construir filtro
-      const filter = query ? { $or: [{ category: query }, { status: query }] } : {};
+      console.log("Parametros de consulta:", category, status); // Confirmamos parametros recibidos
 
-      // Construir opciones de paginación y ordenamiento
+      // Filtro
+      const filter = {};
+      // Categoria
+      if (category) {
+        filter.category = category;
+      }
+      // Status
+      if (status) {
+        filter.status = status;
+      }
+
+      // Construir opciones paginacion y ordenamiento
       const options = {
-        limit: parseInt(limit),
-        page: parseInt(page),
+        limit: parseInt(limit) || 10,
+        page: parseInt(page) || 1,
         sort: sort ? { price: sort === 'asc' ? 1 : -1 } : {}
       };
 
-      // Realizar consulta con paginación
+      // Consulta con paginacion
       const result = await Product.paginate(filter, options);
 
       res.json({
@@ -30,8 +38,8 @@ const productsController = {
         page: result.page,
         hasPrevPage: result.hasPrevPage,
         hasNextPage: result.hasNextPage,
-        prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
-        nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
+        prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}&sort=${sort}&category=${category}&status=${status}` : null,
+        nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort}&category=${category}&status=${status}` : null        
       });
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener los productos.' });

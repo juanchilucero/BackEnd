@@ -1,92 +1,202 @@
 [
   {
-    "id": 1,
-    "title": "Producto 1",
-    "description": "Descripción del producto 1",
-    "price": 100,
-    "thumbnail": "thumbnail1.jpg",
-    "code": "ABC123",
-    "stock": 10
+    "title": "Café en Grano Premium",
+    "description": "Café en grano de alta calidad, origen Colombia.",
+    "code": "CF1001",
+    "price": 15.99,
+    "status": true,
+    "stock": 100,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 2,
-    "title": "Producto 2",
-    "description": "Descripción del producto 2",
-    "price": 200,
-    "thumbnail": "thumbnail2.jpg",
-    "code": "DEF456",
-    "stock": 20
+    "title": "Café Molido Intenso",
+    "description": "Café molido con un sabor intenso, origen Brasil.",
+    "code": "CF1002",
+    "price": 13.99,
+    "status": true,
+    "stock": 150,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 3,
-    "title": "Producto 3",
-    "description": "Descripción del producto 3",
-    "price": 150,
-    "thumbnail": "thumbnail3.jpg",
-    "code": "GHI789",
-    "stock": 15
+    "title": "Café Orgánico",
+    "description": "Café en grano orgánico, sin pesticidas, origen Perú.",
+    "code": "CF1003",
+    "price": 18.99,
+    "status": true,
+    "stock": 80,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 4,
-    "title": "Producto 4",
-    "description": "Descripción del producto 4 nueva",
-    "price": 120,
-    "thumbnail": "thumbnail4.jpg",
-    "code": "JKL012",
-    "stock": 12
+    "title": "Café Descafeinado",
+    "description": "Café molido descafeinado, origen México.",
+    "code": "CF1004",
+    "price": 12.99,
+    "status": true,
+    "stock": 120,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 5,
-    "title": "Producto 5",
-    "description": "Descripción del producto 5",
-    "price": 180,
-    "thumbnail": "thumbnail5.jpg",
-    "code": "MNO345",
-    "stock": 18
+    "title": "Café Espresso",
+    "description": "Café en grano especial para espresso, origen Italia.",
+    "code": "CF1005",
+    "price": 16.99,
+    "status": true,
+    "stock": 90,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 6,
-    "title": "Producto 6",
-    "description": "Descripción del producto 6",
-    "price": 90,
-    "thumbnail": "thumbnail6.jpg",
-    "code": "PQR678",
-    "stock": 9
+    "title": "Café Arabica",
+    "description": "Café en grano 100% Arabica, origen Etiopía.",
+    "code": "CF1006",
+    "price": 19.99,
+    "status": true,
+    "stock": 110,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 7,
-    "title": "Producto 7",
-    "description": "Descripción del producto 7",
-    "price": 250,
-    "thumbnail": "thumbnail7.jpg",
-    "code": "STU901",
-    "stock": 25
+    "title": "Café Molido Suave",
+    "description": "Café molido de sabor suave, origen Costa Rica.",
+    "code": "CF1007",
+    "price": 14.99,
+    "status": true,
+    "stock": 130,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 8,
-    "title": "Producto 8",
-    "description": "Descripción del producto 8",
-    "price": 110,
-    "thumbnail": "thumbnail8.jpg",
-    "code": "VWX234",
-    "stock": 11
+    "title": "Filtro de Café de Papel",
+    "description": "Filtros de papel desechables para café.",
+    "code": "CF2001",
+    "price": 4.99,
+    "status": true,
+    "stock": 200,
+    "category": "Accesorios",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 9,
-    "title": "Producto 9",
-    "description": "Descripción del producto 9",
-    "price": 170,
-    "thumbnail": "thumbnail9.jpg",
-    "code": "YZA567",
-    "stock": 17
+    "title": "Molino de Café Manual",
+    "description": "Molino de café manual de acero inoxidable.",
+    "code": "CF3001",
+    "price": 29.99,
+    "status": true,
+    "stock": 50,
+    "category": "Accesorios",
+    "thumbnail": "https://via.placeholder.com/150"
   },
   {
-    "id": 10,
-    "title": "Producto 10",
-    "description": "Descripción del producto 10",
-    "price": 140,
-    "thumbnail": "thumbnail10.jpg",
-    "code": "BCD890",
-    "stock": 14
+    "title": "Molino de Café Eléctrico",
+    "description": "Molino de café eléctrico con múltiples configuraciones de molienda.",
+    "code": "CF3002",
+    "price": 49.99,
+    "status": true,
+    "stock": 40,
+    "category": "Accesorios",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café Blend Especial",
+    "description": "Mezcla especial de café en grano, origen varios.",
+    "code": "CF1008",
+    "price": 17.99,
+    "status": true,
+    "stock": 95,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café Molido Decaf",
+    "description": "Café molido descafeinado, origen Guatemala.",
+    "code": "CF1009",
+    "price": 11.99,
+    "status": true,
+    "stock": 100,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café en Grano Torrefacto",
+    "description": "Café en grano torrefacto, origen España.",
+    "code": "CF1010",
+    "price": 14.99,
+    "status": true,
+    "stock": 75,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café Molido Americano",
+    "description": "Café molido estilo americano, origen Honduras.",
+    "code": "CF1011",
+    "price": 13.99,
+    "status": true,
+    "stock": 110,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café en Grano Reserva",
+    "description": "Café en grano de reserva especial, origen Kenia.",
+    "code": "CF1012",
+    "price": 21.99,
+    "status": true,
+    "stock": 60,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café Molido Orgánico",
+    "description": "Café molido orgánico, sin pesticidas, origen Nicaragua.",
+    "code": "CF1013",
+    "price": 18.99,
+    "status": true,
+    "stock": 90,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Prensa Francesa",
+    "description": "Prensa francesa para preparar café.",
+    "code": "CF2002",
+    "price": 24.99,
+    "status": true,
+    "stock": 70,
+    "category": "Accesorios",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Cafetera Italiana",
+    "description": "Cafetera italiana de aluminio para espresso.",
+    "code": "CF2003",
+    "price": 34.99,
+    "status": true,
+    "stock": 50,
+    "category": "Accesorios",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café Molido Intenso Extra",
+    "description": "Café molido con un sabor extra intenso, origen Vietnam.",
+    "code": "CF1014",
+    "price": 12.99,
+    "status": true,
+    "stock": 140,
+    "category": "Café Molido",
+    "thumbnail": "https://via.placeholder.com/150"
+  },
+  {
+    "title": "Café en Grano Suave",
+    "description": "Café en grano de sabor suave, origen Jamaica.",
+    "code": "CF1015",
+    "price": 22.99,
+    "status": true,
+    "stock": 85,
+    "category": "Café en Grano",
+    "thumbnail": "https://via.placeholder.com/150"
   }
 ]

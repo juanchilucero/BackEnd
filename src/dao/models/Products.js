@@ -1,4 +1,3 @@
-// Product.js
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
@@ -9,11 +8,11 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   status: { type: Boolean, default: true },
   stock: { type: Number, default: 0 },
-  category: String,
+  category: { type: String, required: true},
   thumbnail: String
 });
 
-// Aplicar el plugin de paginación
+// Plugin de paginacion
 productSchema.plugin(mongoosePaginate);
 
 const Product = mongoose.model('Product', productSchema);

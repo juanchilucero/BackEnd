@@ -1,7 +1,5 @@
-// src/dao/controllers/cartsController.js
-
 import Cart from '../models/Cart.js';
-import Product from '../models/Product.js'; // Corregí el nombre del modelo de productos
+import Product from '../models/Products.js';
 
 const cartsController = {
   // Crear un nuevo carrito
@@ -19,7 +17,7 @@ const cartsController = {
   getCartById: async (req, res) => {
     try {
       const cartId = req.params.cid;
-      const cart = await Cart.findById(cartId).populate('products.productId'); // Utilizamos populate para obtener los productos completos
+      const cart = await Cart.findById(cartId).populate('products.productId');
       if (!cart) {
         return res.status(404).json({ error: 'Carrito no encontrado.' });
       }
@@ -138,19 +136,16 @@ clearCart: async (req, res) => {
   try {
     const cartId = req.params.cid;
 
-    const cart = await Cart.findById(cartId);
-    if (!cart) {
+    const deletedCart = await Cart.findByIdAndDelete(cartId);
+    if (!deletedCart) {
       return res.status(404).json({ error: 'El carrito no existe.' });
     }
 
-    cart.products = [];
-    const updatedCart = await cart.save();
-    res.status(200).json(updatedCart);
+    res.status(200).json({ message: 'Carrito eliminado exitosamente.' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al vaciar el carrito.' });
+    res.status(500).json({ error: 'Error al eliminar el carrito.' });
   }
 }
-
 };
 
 export default cartsController;
