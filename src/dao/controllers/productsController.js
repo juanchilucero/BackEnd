@@ -3,18 +3,36 @@
 import Product from '../models/Products.js';
 
 const productsController = {
-  // Obtener todos los productos
+  // Obtener todos los productos con filtros, paginación y ordenamiento
   getProducts: async (req, res) => {
     try {
-      let products = await Product.find();
+      const { limit = 10, page = 1, sort, query } = req.query;
 
-      // parametro limit
-      if (req.query.limit) {
-        const limit = parseInt(req.query.limit);
-        products = products.slice(0, limit);
-      }
+      // Construir filtro
+      const filter = query ? { $or: [{ category: query }, { status: query }] } : {};
 
-      res.json(products);
+      // Construir opciones de paginación y ordenamiento
+      const options = {
+        limit: parseInt(limit),
+        page: parseInt(page),
+        sort: sort ? { price: sort === 'asc' ? 1 : -1 } : {}
+      };
+
+      // Realizar consulta con paginación
+      const result = await Product.paginate(filter, options);
+
+      res.json({
+        status: 'success',
+        payload: result.docs,
+        totalPages: result.totalPages,
+        prevPage: result.prevPage,
+        nextPage: result.nextPage,
+        page: result.page,
+        hasPrevPage: result.hasPrevPage,
+        hasNextPage: result.hasNextPage,
+        prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
+        nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
+      });
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener los productos.' });
     }
@@ -80,7 +98,7 @@ const productsController = {
 
       res.json(updatedProduct);
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar el producto.' });
+      res.status500.json({ error: 'Error al actualizar el producto.' });
     }
   },
 
