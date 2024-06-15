@@ -1,5 +1,5 @@
 import { Router } from "express";
-import productsRoutes from "./products.routes";
+import productsRoutes from "./products.routes.js";
 import cartsRoutes from "./carts.routes.js";
 import sessionRoutes from "./session.routes.js";
 

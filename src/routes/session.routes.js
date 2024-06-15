@@ -1,53 +1,33 @@
-import { Router } from "express";
-import userController from "../controllers/userController.js";
+import { Router } from 'express';
+import passport from '../config/passport.config.js'; // Asegúrate de usar la ruta correcta
 
 const router = Router();
 
-// registro
-router.post("/register", async (req, res) => {
-  try {
-    const userData = req.body;
-    const newUser = await userController.create(userData);
-
-    res.status(201).json({ status: "success", payload: newUser });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: "Error", msg: "Internal server error" });
-  }
+// Ruta de registro local
+router.post('/register', passport.authenticate('register'), (req, res) => {
+    res.status(201).json({ status: 'success', msg: 'Usuario creado' });
 });
 
-// login
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await userController.getByEmail(email);
-    
-    if (!user || user.password !== password) {
-      return res.status(401).json({ status: "error", msg: "Email o Contraseña invalidos" });
-    }
-    
-    // logica para la sesion
-    req.session.user = {
-      id: user._id,
-      email: user.email,
-      role: email === 'adminCoder@coder.com' ? 'admin' : 'user'
-    };
-    
-    res.status(200).json({ status: "success", msg: "Logueado Exitosamente" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: "Error", msg: "Internal server error" });
-  }
+// Ruta de inicio de sesión local
+router.post('/login', passport.authenticate('login'), (req, res) => {
+    res.status(200).json({ status: 'success', payload: req.user });
 });
 
-// ruta logout
-router.get("/logout", (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ status: "Error", msg: "Error al desloguear" });
-        }
-        res.status(200).json({ status: "success", msg: "Deslogueado Exitosamente" });
-    });
+// Ruta de autenticación con Google
+router.get('/google', passport.authenticate('google', {
+    scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] // Define los alcances que necesites
+}));
+
+// Ruta de callback de autenticación con Google
+router.get('/google/callback', passport.authenticate('google', {
+    successRedirect: '/api/products', // Redirige a la página de inicio después de iniciar sesión
+    failureRedirect: '/api/session/login' // Redirige a la página de inicio de sesión en caso de error
+}));
+
+// Ruta de cierre de sesión
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.status(200).json({ status: 'success', msg: 'Sesión cerrada exitosamente' });
 });
 
 export default router;

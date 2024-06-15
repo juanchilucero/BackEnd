@@ -17,7 +17,8 @@ app.use(session({
         ttl: 15
     }),
     secret: "CodigoSecreto",
-    resave: true
+    resave: true,
+    saveUninitialized: false
 }));
 
 app.use("/api", router);
