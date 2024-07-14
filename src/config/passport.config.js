@@ -27,8 +27,8 @@ passport.use('local', new LocalStrategy({
 
 // Configuración de la estrategia de autenticación con Google
 passport.use(new GoogleStrategy({
-    clientID: '', // Reemplazar con tu Client ID de Google
-    clientSecret: '', // Reemplazar con tu Client Secret de Google
+    //clientID: '102028160625-adhr0u6tpefalk6c0dceeeh7gpbv1tlm.apps.googleusercontent.com', // Reemplazar con tu Client ID de Google
+    //clientSecret: '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', // Reemplazar con tu Client Secret de Google
     callbackURL: 'http://localhost:8080/api/auth/google/callback' // Reemplazar con tu URL de callback
 }, async (accessToken, refreshToken, profile, done) => {
     try {
