@@ -1,9 +1,10 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { isValidPassword } from '../utils/hashPassword.js';  // Corregido para importar desde hashPassword.js
-import { createToken } from '../utils/jwt.js';
-import User from '../dao/models/users.js'; // Asegúrate de usar la ruta correcta
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { comparePassword } from '../utils/authUtils.js';
+import { verifyToken } from '../utils/jwtUtils.js';
+import userModel from '../models/user.model.js';
 
 // Configuración de la estrategia de autenticación local
 passport.use('local', new LocalStrategy({
@@ -11,40 +12,55 @@ passport.use('local', new LocalStrategy({
     passwordField: 'password'
 }, async (email, password, done) => {
     try {
-        const user = await User.findOne({ email });
+        const user = await userModel.findOne({ email });
         if (!user) return done(null, false, { message: 'Usuario no encontrado' });
 
-        const isValid = await isValidPassword(password, user.password);
-        if (!isValid) return done(null, false, { message: 'Contraseña incorrecta' });
+        const isMatch = await comparePassword(password, user.password);
+        if (!isMatch) return done(null, false, { message: 'Contraseña incorrecta' });
 
         return done(null, user);
     } catch (error) {
+        console.error('Error en estrategia local:', error);
         return done(error);
     }
 }));
 
 // Configuración de la estrategia de autenticación con Google
 passport.use(new GoogleStrategy({
-    clientID: 'cliente id', // Reemplazar con tu Client ID de Google
-    clientSecret: 'secreto', // Reemplazar con tu Client Secret de Google
-    callbackURL: 'http://localhost:8080/api/session/google/callback' // Reemplazar con tu URL de callback
+    clientID: '102028160625-adhr0u6tpefalk6c0dceeeh7gpbv1tlm.apps.googleusercontent.com', // Reemplazar con tu Client ID de Google
+    clientSecret: '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', // Reemplazar con tu Client Secret de Google
+    callbackURL: 'http://localhost:8080/api/auth/google/callback' // Reemplazar con tu URL de callback
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ googleId: profile.id });
+        let user = await userModel.findOne({ googleId: profile.id });
         if (!user) {
-            // Crear un nuevo usuario si no existe
             const newUser = {
                 email: profile.emails[0].value,
-                first_name: profile.name.givenName,
-                last_name: profile.name.familyName,
+                nombre: profile.displayName,
                 googleId: profile.id,
-                role: 'user'
+                tipo: "visitante"
             };
-            user = await User.create(newUser);
+            user = await userModel.create(newUser);
         }
         return done(null, user);
     } catch (error) {
+        console.error('Error en estrategia Google:', error);
         return done(error);
+    }
+}));
+
+// Configuración de Jwt
+passport.use(new JwtStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: 'your_jwt_secret'
+}, async (jwtPayload, done) => {
+    try {
+        const user = await userModel.findById(jwtPayload.id);
+        if (user) return done(null, user);
+        return done(null, false);
+    } catch (err) {
+        console.error('Error en estrategia JWT:', err);
+        return done(err);
     }
 }));
 
@@ -56,9 +72,13 @@ passport.serializeUser((user, done) => {
 // Deserializar el usuario para recuperarlo de la sesión
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await User.findById(id);
+        const user = await userModel.findById(id);
+        if (!user) {
+            return done(new Error('Usuario no encontrado'), null);
+        }
         done(null, user);
     } catch (error) {
+        console.error('Error al deserializar usuario:', error);
         done(error);
     }
 });

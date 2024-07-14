@@ -1,12 +1,12 @@
-import { Router } from "express";
-import productsRoutes from "./products.routes.js";
-import cartsRoutes from "./carts.routes.js";
-import sessionRoutes from "./session.routes.js";
+import express from 'express';
+import authRoutes from './auth.routes.js';
+import cocheraRoutes from './cochera.routes.js';
+import userRoutes from './user.routes.js'; 
 
-const router = Router();
+const router = express.Router();
 
-router.use("/products", productsRoutes);
-router.use("/carts", cartsRoutes);
-router.use("/session", sessionRoutes);
+router.use('/auth', authRoutes);
+router.use('/cochera', cocheraRoutes);
+router.use('/user', userRoutes);
 
 export default router;
