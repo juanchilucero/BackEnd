@@ -11,16 +11,10 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // Ruta de autenticación con Google
-router.get(
-    '/google',
-    passport.authenticate('google', {
-      scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
-      session: false,
-    }),
-    authController.googleLogin
-  );
+router.get('/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'] }));
 
 // Callback de Google
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/' }), authController.googleCallback);
 
 export default router;
+

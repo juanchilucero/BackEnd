@@ -1,44 +1,73 @@
 import userModel from '../models/user.model.js';
-import { hashPassword } from '../utils/authUtils.js';
+import { hashPassword, comparePassword } from '../utils/authUtils.js';
 import { createToken } from '../utils/jwtUtils.js';
+import passport from 'passport';
+import { config } from '../config/config.js';
+import Session from '../models/session.model.js';
 
 const authController = { 
+  // Registro de un nuevo usuario
   register: async (req, res) => {
     try {
       const { first_name, last_name, email, password } = req.body;
+      const existingUser = await userModel.findOne({ email });
+      if (existingUser){
+        return res.status(400).json({ message: 'El usuario ya existe' });
+      }
       const hashedPassword = await hashPassword(password);
       const newUser = new userModel({ first_name, last_name, email, password: hashedPassword });
       await newUser.save();
       res.status(201).json({ message: 'Usuario registrado con éxito' });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: "Error al registrar el usuario" });
     }
   },
 
-  login: (req, res, next) => {
-    passport.authenticate('local', { session: false }, (err, user, info) => {
+  // Inicio de sesión
+  login: async (req, res, next) => {
+    passport.authenticate('local', { session: false }, async (err, user, info) => {
       if (err || !user) {
         return res.status(400).json({ message: info ? info.message : 'Inicio de sesión fallido', user });
       }
 
-      req.login(user, { session: false }, (err) => {
-        if (err) {
-          res.send(err);
-        }
+      // Verificar si el usuario es el administrador usando las credenciales del .env
+      if (user.email === config.adminEmail && comparePassword(req.body.password, config.adminPassword)) {
+        // Generar un token JWT para el administrador
+        const token = createToken({ id: user.id, role: 'admin' });
 
-        const token = createToken({ id: user.id });
+        // Guardar la sesión en la base de datos
+        const session = new Session({ userId: user.id, token });
+        await session.save();
+
         return res.json({ user, token });
-      });
+      }
+
+      // Para usuarios normales, generar un token JWT
+      const token = createToken({ id: user.id, role: user.role });
+
+      // Guardar la sesión en la base de datos
+      const session = new Session({ userId: user.id, token });
+      await session.save();
+
+      return res.json({ user, token });
     })(req, res, next);
   },
 
-  googleCallback: (req, res) => {
-    const token = createToken({ id: req.user.id });
+  // Callback de Google
+  googleCallback: async (req, res) => {
+    const token = createToken({ id: req.user.id, role: req.user.role });
+
+    // Guardar la sesión en la base de datos
+    const session = new Session({ userId: req.user.id, token });
+    await session.save();
+
     res.redirect(`/?token=${token}`);
   },
 
+  // Inicio de sesión con Google
   googleLogin: async (req, res) => {
     try {
+      // Devolver la información del usuario después de un inicio de sesión exitoso con Google
       return res.status(200).json({ status: 'success', payload: req.user });
     } catch (error) {
       console.error(error);

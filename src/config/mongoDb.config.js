@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
-
-const urlDb = 'mongodb+srv://juanchilucero:Milanesas2024@e-commerce.mzjqjcs.mongodb.net/?retryWrites=true&w=majority&appName=e-commerce';
+import { config } from './config.js';
 
 export const connectMongoDb = async () => {
     try {
         // Conexión a la base de datos
-        mongoose.connect(urlDb);
+        await mongoose.connect(config.mongoUrl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
         console.log('MongoDB conectado');
     } catch (error) {
         console.error('Error al conectar a MongoDB:', error);
