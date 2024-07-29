@@ -3,7 +3,8 @@ import { hashPassword, comparePassword } from '../utils/authUtils.js';
 import { createToken } from '../utils/jwtUtils.js';
 import passport from 'passport';
 import { config } from '../config/config.js';
-import Session from '../models/session.model.js';
+import sessionDao from '../Dao/session.dao.js'; // Importar el DAO
+import { CreateSessionDTO, DeleteSessionDTO } from '../Dto/session.dto.js'; // Importar los DTOs
 
 const authController = { 
   // Registro de un nuevo usuario
@@ -11,7 +12,7 @@ const authController = {
     try {
       const { first_name, last_name, email, password } = req.body;
       const existingUser = await userModel.findOne({ email });
-      if (existingUser){
+      if (existingUser) {
         return res.status(400).json({ message: 'El usuario ya existe' });
       }
       const hashedPassword = await hashPassword(password);
@@ -35,9 +36,11 @@ const authController = {
         // Generar un token JWT para el administrador
         const token = createToken({ id: user.id, role: 'admin' });
 
-        // Guardar la sesión en la base de datos
-        const session = new Session({ userId: user.id, token });
-        await session.save();
+        // Crear el DTO para la sesión
+        const createSessionDto = new CreateSessionDTO(user.id, token);
+
+        // Guardar la sesión en la base de datos usando el DAO
+        await sessionDao.createSession(createSessionDto.userId, createSessionDto.token);
 
         return res.json({ user, token });
       }
@@ -45,9 +48,11 @@ const authController = {
       // Para usuarios normales, generar un token JWT
       const token = createToken({ id: user.id, role: user.role });
 
-      // Guardar la sesión en la base de datos
-      const session = new Session({ userId: user.id, token });
-      await session.save();
+      // Crear el DTO para la sesión
+      const createSessionDto = new CreateSessionDTO(user.id, token);
+
+      // Guardar la sesión en la base de datos usando el DAO
+      await sessionDao.createSession(createSessionDto.userId, createSessionDto.token);
 
       return res.json({ user, token });
     })(req, res, next);
@@ -57,9 +62,11 @@ const authController = {
   googleCallback: async (req, res) => {
     const token = createToken({ id: req.user.id, role: req.user.role });
 
-    // Guardar la sesión en la base de datos
-    const session = new Session({ userId: req.user.id, token });
-    await session.save();
+    // Crear el DTO para la sesión
+    const createSessionDto = new CreateSessionDTO(req.user.id, token);
+
+    // Guardar la sesión en la base de datos usando el DAO
+    await sessionDao.createSession(createSessionDto.userId, createSessionDto.token);
 
     res.redirect(`/?token=${token}`);
   },
@@ -75,24 +82,30 @@ const authController = {
     }
   },
 
- // Eliminar sesión
+  // Eliminar sesión
   logout: async (req, res) => {
-  try {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
-      return res.status(400).json({ message: 'Token requerido' });
-    }
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      if (!token) {
+        return res.status(400).json({ message: 'Token requerido' });
+      }
 
-    const session = await Session.findOneAndDelete({ token });
-    if (!session) {
-      return res.status(404).json({ message: 'Sesión no encontrada' });
-    }
+      // Crear el DTO para eliminar la sesión
+      const deleteSessionDto = new DeleteSessionDTO(token);
 
-    res.status(200).json({ message: 'Sesión cerrada con éxito' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+      // Eliminar la sesión usando el DAO
+      const session = await sessionDao.deleteSessionByToken(deleteSessionDto.token);
+      if (!session) {
+        return res.status(404).json({ message: 'Sesión no encontrada' });
+      }
+
+      res.status(200).json({ message: 'Sesión cerrada con éxito' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   }
-},
 };
 
 export default authController;
+
+

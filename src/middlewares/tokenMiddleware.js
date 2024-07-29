@@ -1,3 +1,4 @@
+//middlewares/tokenMiddleware.js
 import jwt from 'jsonwebtoken';
 import Session from '../models/session.model.js';
 import { config } from '../config/config.js';
@@ -9,9 +10,12 @@ export const verifyToken = async (req, res, next) => {
             return res.status(401).json({ message: 'Token inválido' });
         }
 
-        const token = req.headers.authorization.split(' ')[1];
-        const session = await Session.findOne({ token });
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Token requerido' });
+        }
 
+        const session = await Session.findOne({ token });
         if (!session) {
             return res.status(401).json({ message: 'Sesión inválida o cerrada' });
         }

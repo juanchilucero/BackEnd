@@ -1,11 +1,22 @@
 import userModel from '../models/user.model.js';
 
-export const getUserByEmail = async (email) => {
-    return await userModel.findOne({ email });
-};
+const userDao ={
 
-export const createUser = async (user) => {
-    const newUser = new userModel(user);
-    await newUser.save();
-    return newUser;
-};
+    deleteUserById: async (id) => {
+        return userModel.findByIdAndDelete(id);
+    },
+
+    updateUserById: async (id, updatedData) => {
+        return userModel.findByIdAndUpdate(id, updatedData, { new: true });
+    },
+
+    getAllUsers: async () => {
+        return userModel.find();
+    },
+
+    getUserById: async (id) => {
+        return userModel.findById(id);
+    }
+}
+
+export default userDao
