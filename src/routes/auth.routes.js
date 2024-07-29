@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import authController from '../controllers/authController.js';
-
+import { verifyToken } from '../middlewares/tokenMiddleware.js';
 const router = express.Router();
 
 // Ruta de registro
@@ -15,6 +15,9 @@ router.get('/google', passport.authenticate('google', { scope: ['https://www.goo
 
 // Callback de Google
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/' }), authController.googleCallback);
+
+// Ruta para cerrar sesión usando el ID del usuario
+router.delete('/logout', verifyToken, authController.logout);
 
 export default router;
 

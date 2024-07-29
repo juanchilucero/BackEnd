@@ -5,7 +5,7 @@ const cocheraCollection = "cochera";
 const CocheraSchema = new mongoose.Schema({
     numero: { type: Number, required: true, unique: true },
     propietario: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-    estado: { type: String, enum: ['ocupado', 'desocupado'], default: 'desocupado' },
+    estado: { type: String, enum: ['disponible', 'ocupado', 'desocupado', 'no-disponible'], default: 'desocupado' },
     ocupaciones: [{
         usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
         vehiculo: { type: String },

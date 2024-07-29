@@ -74,6 +74,25 @@ const authController = {
       res.status(500).json({ status: 'Error', msg: 'Internal Server Error' });
     }
   },
+
+ // Eliminar sesión
+  logout: async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+      return res.status(400).json({ message: 'Token requerido' });
+    }
+
+    const session = await Session.findOneAndDelete({ token });
+    if (!session) {
+      return res.status(404).json({ message: 'Sesión no encontrada' });
+    }
+
+    res.status(200).json({ message: 'Sesión cerrada con éxito' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+},
 };
 
 export default authController;
