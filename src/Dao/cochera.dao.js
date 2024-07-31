@@ -1,14 +1,15 @@
+// src/dao/cochera.dao.js
 import { cocheraModel } from '../models/cochera.model.js';
 
 const cocheraDao = {
     // Obtener todas las cocheras
     getAllCocheras: async () => {
-        return cocheraModel.find().populate('propietario', 'first_name last_name').populate('ocupaciones.usuario', 'first_name last_name');
+        return cocheraModel.find().populate('propietario', 'first_name last_name').populate('ocupaciones.tid');
     },
 
     // Obtener cochera por ID
     getCocheraById: async (id) => {
-        return cocheraModel.findById(id).populate('ocupaciones.usuario', 'first_name last_name');
+        return cocheraModel.findById(id).populate('ocupaciones.tid');
     },
 
     // Marcar cochera como disponible
@@ -33,3 +34,4 @@ const cocheraDao = {
 };
 
 export default cocheraDao;
+

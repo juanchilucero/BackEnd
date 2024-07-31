@@ -1,7 +1,8 @@
 import express from 'express';
 import cocheraController from '../controllers/cocheraController.js';
-import { isAdminOrPropietario } from '../middlewares/authMiddleware.js'; // Asegúrate de tener estos middlewares
+import { isAdminOrPropietario } from '../middlewares/authMiddleware.js';
 import { verifyToken } from '../middlewares/tokenMiddleware.js';
+
 const router = express.Router();
 
 // Ruta para marcar una cochera como no disponible
@@ -23,3 +24,4 @@ router.get('/ver-cocheras', verifyToken, cocheraController.verCocheras);
 router.get('/:cid/ver-usos-cocheras-propietario', verifyToken, isAdminOrPropietario, cocheraController.verUsosCocheraPropietario);
 
 export default router;
+
