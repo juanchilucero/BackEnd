@@ -1,44 +1,37 @@
-// src/controllers/ticketController.js
 import ticketDao from '../Dao/ticket.dao.js';
 import cocheraDao from '../Dao/cochera.dao.js';
 import moment from 'moment';
 import { TicketDTO, TicketResumenDTO } from '../Dto/ticket.dto.js';
 
-const calcularCosto = (tiempoInicio, tiempoFin) => {
-    const inicio = moment(tiempoInicio);
-    const fin = moment(tiempoFin);
-    const duracion = moment.duration(fin.diff(inicio));
-    const horas = duracion.asHours();
-    const costoPorHora = 100; // Ejemplo, 100 pesos por hora
-    return Math.round(horas * costoPorHora);
-};
 
 const ticketController = {
-    obtenerTicket: async (req, res) => {
+    obtenerTicket: async (req, res, next) => {
         const { tid } = req.params;
         try {
             const ticket = await ticketDao.getTicketById(tid);
-            if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });
+            if (!ticket) return next({ code: 'TICKET_NOT_FOUND' });
 
             const ticketDTO = new TicketDTO(ticket);
             res.status(200).json(ticketDTO);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    finalizarUsoCochera: async (req, res) => {
+    finalizarUsoCochera: async (req, res, next) => {
         const { tid } = req.params;
         try {
             const ticket = await ticketDao.getTicketById(tid);
-            if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });
+            if (!ticket) return next({ code: 'TICKET_NOT_FOUND' });
 
             if (!ticket.tiempoFin || !ticket.costo) {
-                return res.status(400).json({ message: 'Debe liberar la cochera primero' });
+                return next({ code: 'TICKET_NOT_FINALIZED' });
             }
 
             const tiempoUso = moment.duration(moment(ticket.tiempoFin).diff(moment(ticket.tiempoInicio))).asMinutes();
             const cochera = await cocheraDao.getCocheraById(ticket.cocheraId);
+            if (!cochera) return next({ code: 'COCHERA_NOT_FOUND' });
+
             const ticketResumenDTO = new TicketResumenDTO({
                 numeroCochera: cochera.numero,
                 tiempoUso,
@@ -48,7 +41,7 @@ const ticketController = {
 
             res.status(200).json(ticketResumenDTO);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     }
 };

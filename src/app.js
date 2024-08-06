@@ -6,6 +6,8 @@ import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import './config/passport.config.js';
+import mockingRoutes from './routes/mocking.routes.js'; // Importamos las rutas de mocking
+import errorHandler from './middlewares/errorHandler.js'; // Importamos el manejador de errores
 
 const app = express();
 const PORT = 8080;
@@ -34,6 +36,10 @@ app.use(passport.session());
 
 // Rutas
 app.use("/api", router);
+app.use("/api", mockingRoutes); // Añadimos las rutas de mocking
+
+// Manejador de errores
+app.use(errorHandler); // Añadimos el middleware para manejar errores
 
 // Iniciar el servidor
 app.listen(PORT, () => {

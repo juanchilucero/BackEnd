@@ -1,8 +1,7 @@
-// src/controllers/cocheraController.js
 import cocheraDao from '../Dao/cochera.dao.js';
 import moment from 'moment';
 import Ticket from '../models/ticket.model.js';
-import { OcupacionDTO } from '../dto/cochera.dto.js';
+import { OcupacionDTO } from '../Dto/cochera.dto.js';
 
 const calcularCosto = (tiempoInicio, tiempoFin) => {
     const inicio = moment(tiempoInicio);
@@ -14,52 +13,52 @@ const calcularCosto = (tiempoInicio, tiempoFin) => {
 };
 
 const cocheraController = {
-    marcarNoDisponible: async (req, res) => {
+    marcarNoDisponible: async (req, res, next) => {
         const { cid } = req.params;
         try {
             const user = req.user;
             const cochera = await cocheraDao.getCocheraById(cid);
 
-            if (!cochera) return res.status(404).json({ message: 'Cochera no encontrada' });
+            if (!cochera) return next({ code: 'COCHERA_NOT_FOUND' });
 
             if (cochera.propietario.toString() !== user._id.toString() && user.role !== 'admin') {
-                return res.status(403).json({ message: 'No autorizado' });
+                return next({ code: 'USER_NOT_AUTHORIZED' });
             }
 
             await cocheraDao.marcarNoDisponible(cid);
             res.status(200).json({ message: 'Cochera marcada como no disponible' });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    marcarDisponible: async (req, res) => {
+    marcarDisponible: async (req, res, next) => {
         const { cid } = req.params;
         try {
             const user = req.user;
             const cochera = await cocheraDao.getCocheraById(cid);
-            if (!cochera) return res.status(404).json({ message: 'Cochera no encontrada' });
+            if (!cochera) return next({ code: 'COCHERA_NOT_FOUND' });
 
             if (cochera.propietario.toString() !== user._id.toString() && user.role !== 'admin') {
-                return res.status(403).json({ message: 'No autorizado' });
+                return next({ code: 'USER_NOT_AUTHORIZED' });
             }
 
             await cocheraDao.marcarDisponible(cid);
             res.status(200).json({ message: 'Cochera marcada como disponible' });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    ocuparCochera: async (req, res) => {
+    ocuparCochera: async (req, res, next) => {
         const { cid } = req.params;
         const { vehiculo } = req.body;
         try {
             const user = req.user;
             const cochera = await cocheraDao.getCocheraById(cid);
 
-            if (!cochera) return res.status(404).json({ message: 'Cochera no encontrada' });
-            if (cochera.estado === 'ocupado') return res.status(400).json({ message: 'Cochera ya está ocupada' });
+            if (!cochera) return next({ code: 'COCHERA_NOT_FOUND' });
+            if (cochera.estado === 'ocupado') return next({ code: 'COCHERA_ALREADY_OCCUPIED' });
 
             const tiempoInicio = moment();
 
@@ -79,20 +78,20 @@ const cocheraController = {
 
             res.status(200).json({ message: 'Cochera ocupada con éxito', ticket: ticketGuardado });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    liberarCochera: async (req, res) => {
+    liberarCochera: async (req, res, next) => {
         const { cid } = req.params;
         try {
             const user = req.user;
             const cochera = await cocheraDao.getCocheraById(cid);
-            if (!cochera) return res.status(404).json({ message: 'Cochera no encontrada' });
-            if (cochera.estado === 'desocupado') return res.status(400).json({ message: 'Cochera ya está desocupada' });
+            if (!cochera) return next({ code: 'COCHERA_NOT_FOUND' });
+            if (cochera.estado === 'desocupado') return next({ code: 'COCHERA_ALREADY_UNOCCUPIED' });
 
             const ocupacion = cochera.ocupaciones.find(o => o.tid.toString() === user._id.toString() && !o.tiempoFin);
-            if (!ocupacion) return res.status(404).json({ message: 'Ocupación no encontrada' });
+            if (!ocupacion) return next({ code: 'OCUPACION_NOT_FOUND' });
 
             const tiempoFin = moment();
             const costo = user.role !== 'propietario' ? calcularCosto(ocupacion.tiempoInicio, tiempoFin) : 0;
@@ -100,7 +99,7 @@ const cocheraController = {
             await cocheraDao.liberarCochera(cid, ocupacion._id, tiempoFin, costo);
 
             const ticket = await Ticket.findById(ocupacion.tid);
-            if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });
+            if (!ticket) return next({ code: 'TICKET_NOT_FOUND' });
 
             ticket.tiempoFin = tiempoFin;
             ticket.costo = costo;
@@ -109,40 +108,40 @@ const cocheraController = {
 
             res.status(200).json({ message: 'Cochera liberada con éxito', ocupacion: ticket });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    verCocheras: async (req, res) => {
+    verCocheras: async (req, res, next) => {
         try {
             const cocheras = await cocheraDao.getAllCocheras();
             res.status(200).json(cocheras);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     },
 
-    verUsosCocheraPropietario: async (req, res) => {
+    verUsosCocheraPropietario: async (req, res, next) => {
         const { cid } = req.params;
         try {
             const user = req.user;
 
             if (user.role !== 'admin' && user.role !== 'propietario') {
-                return res.status(403).json({ message: 'No autorizado' });
+                return next({ code: 'USER_NOT_AUTHORIZED' });
             }
 
             const cochera = await cocheraDao.getCocheraById(cid);
             if (!cochera) {
-                return res.status(404).json({ message: 'Cochera no encontrada' });
+                return next({ code: 'COCHERA_NOT_FOUND' });
             }
 
             if (user.role !== 'admin' && cochera.propietario.toString() !== user._id.toString()) {
-                return res.status(403).json({ message: 'No autorizado' });
+                return next({ code: 'USER_NOT_AUTHORIZED' });
             }
 
             res.status(200).json(cochera.ocupaciones);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
     }
 };
