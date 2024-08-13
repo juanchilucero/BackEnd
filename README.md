@@ -46,11 +46,8 @@ Sigue estos pasos para inicializar el proyecto en tu entorno local.
     ```
 4. Configura las variables de entorno. Crea un archivo `.env` en la raíz del proyecto y agrega las siguientes variables:
     ```env
-    MONGO_URL=mongodb+srv://juanchilucero:Milanesas2024@e-commerce.mzjqjcs.mongodb.net/?retryWrites=true&w=majority&appName=e-commerce
     ADMIN_EMAIL=adminCoder@coder.com
     ADMIN_PASSWORD=adminCod3r123
-    GOOGLE_CLIENT_ID=102028160625-adhr0u6tpefalk6c0dceeeh7gpbv1tlm.apps.googleusercontent.com
-    GOOGLE_CLIENT_SECRET=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
     GOOGLE_CALLBACK_URL=http://localhost:8080/api/auth/google/callback
     JWT_SECRET=your_jwt_secret
     ```
@@ -91,6 +88,14 @@ Para usar el sistema de estacionamiento, puedes hacer peticiones a las siguiente
 - Eliminar un usuario: `DELETE /api/user/user/:id` (Solo para administradores)
 - Actualizar un usuario: `PUT /api/user/user/:id` (Solo para administradores)
 
+### Gestión de Errores para Logger
+
+- Probar los niveles de log: `GET /api/logger/loggerTest`  
+  - Descripción: Genera mensajes de log en todos los niveles configurados (debug, http, info, warning, error, fatal). Utiliza el logger para registrar cada mensaje y verifica que se escriban correctamente en los archivos de log configurados.
+  - Respuesta Exitosa: `{ "message": "Logs generados correctamente" }`
+  - Errores Comunes:
+    - 500 Internal Server Error: Puede ocurrir si hay problemas al escribir en los archivos de log o si ocurre un error inesperado en el servidor.
+
 
 ## Estructura del Proyecto
 
@@ -102,8 +107,8 @@ El proyecto está organizado en la siguiente estructura de carpetas:
 - `src/Dto/`: Contiene `cochera.dto.js`, `session.dto.js`, `ticket.dto.js` y `user.dto.js`.
 - `src/middlewares/`: Contiene `authMiddleware.js`, `tokenMiddleware.js` y `errorHandler.js`.
 - `src/models/`: Contiene `cochera.model.js`, `session.model.js`, `ticket.model.js` y `user.model.js`.
-- `src/routes/`: Contiene `auth.routes.js`, `cochera.routes.js`, `index.js`, `user.routes.js`, `mocking.routes.js` y `ticket.routes.js`.
-- `src/utils/`: Contiene `authUtils.js` y `jwtUtils.js`.
+- `src/routes/`: Contiene `auth.routes.js`, `cochera.routes.js`, `index.js`, `user.routes.js`, `mocking.routes.js`, `ticket.routes.js` y `logger.routes.js`.
+- `src/utils/`: Contiene `authUtils.js`, `jwtUtils.js` y `logger.js`.
 - `src/app.js`: Archivo principal del servidor.
 - `.env`: Archivo de configuración de variables de entorno.
 

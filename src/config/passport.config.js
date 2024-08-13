@@ -5,6 +5,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { comparePassword } from '../utils/authUtils.js';
 import userModel from '../models/user.model.js';
 import { config } from '../config/config.js';
+import logger from '../utils/logger.js';
 
 // Configuración de la estrategia de autenticación local
 passport.use('local', new LocalStrategy({
@@ -20,16 +21,16 @@ passport.use('local', new LocalStrategy({
 
     return done(null, user);
   } catch (error) {
-    console.error('Error en estrategia local:', error);
+    logger.error(`Error en estrategia local: ${error.message}`);
     return done(error);
   }
 }));
 
 // Configuración de la estrategia de autenticación con Google
 passport.use(new GoogleStrategy({
-  clientID: config.googleClientId,  // Asegúrate de que esta variable esté correctamente configurada en .env
-  clientSecret: config.googleClientSecret, // Asegúrate de que esta variable esté correctamente configurada en .env
-  callbackURL: config.googleCallbackURL  // Asegúrate de que esta variable esté correctamente configurada en .env
+  clientID: config.googleClientId,
+  clientSecret: config.googleClientSecret,
+  callbackURL: config.googleCallbackURL
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await userModel.findOne({ googleId: profile.id });
@@ -44,7 +45,7 @@ passport.use(new GoogleStrategy({
     }
     return done(null, user);
   } catch (error) {
-    console.error('Error en estrategia Google:', error);
+    logger.error(`Error en estrategia Google: ${error.message}`);
     return done(error);
   }
 }));
@@ -52,14 +53,14 @@ passport.use(new GoogleStrategy({
 // Configuración de Jwt
 passport.use(new JwtStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: config.jwtSecret // Asegúrate de que esta variable esté correctamente configurada en .env
+  secretOrKey: config.jwtSecret
 }, async (jwtPayload, done) => {
   try {
     const user = await userModel.findById(jwtPayload.id);
     if (user) return done(null, user);
     return done(null, false);
   } catch (err) {
-    console.error('Error en estrategia JWT:', err);
+    logger.error(`Error en estrategia JWT: ${err.message}`);
     return done(err);
   }
 }));
@@ -78,7 +79,7 @@ passport.deserializeUser(async (id, done) => {
     }
     done(null, user);
   } catch (error) {
-    console.error('Error al deserializar usuario:', error);
+    logger.error(`Error al deserializar usuario: ${error.message}`);
     done(error);
   }
 });
