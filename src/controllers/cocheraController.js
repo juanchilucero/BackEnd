@@ -94,7 +94,7 @@ const cocheraController = {
             if (!ocupacion) return next({ code: 'OCUPACION_NOT_FOUND' });
 
             const tiempoFin = moment();
-            const costo = user.role !== 'propietario' ? calcularCosto(ocupacion.tiempoInicio, tiempoFin) : 0;
+            const costo = user.role === 'premium' ? 0 : calcularCosto(ocupacion.tiempoInicio, tiempoFin);
 
             await cocheraDao.liberarCochera(cid, ocupacion._id, tiempoFin, costo);
 

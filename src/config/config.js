@@ -8,5 +8,9 @@ export const config = {
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     googleCallbackURL: process.env.GOOGLE_CALLBACK_URL,
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET,
+        // Configuración del correo electrónico
+        emailUser: process.env.EMAIL_USER,
+        emailPassword: process.env.EMAIL_PASSWORD,
+        frontendUrl: process.env.FRONTEND_URL
 };

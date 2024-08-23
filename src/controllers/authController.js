@@ -6,6 +6,8 @@ import { config } from '../config/config.js';
 import sessionDao from '../Dao/session.dao.js'; // Importar el DAO
 import { CreateSessionDTO, DeleteSessionDTO } from '../Dto/session.dto.js'; // Importar los DTOs
 import { UserCreateDTO } from '../Dto/user.dto.js'; // Importar UserCreateDTO
+import { sendPasswordResetEmail } from '../utils/emailUtils.js'; // Importar la utilidad de envío de correos
+import crypto from 'crypto';
 
 const authController = { 
   // Registro de un nuevo usuario
@@ -126,7 +128,65 @@ const authController = {
       error.code = 'INTERNAL_SERVER_ERROR';
       next(error);
     }
-  }
+  },
+      // Solicitar restablecimiento de contraseña
+      forgotPassword: async (req, res, next) => {
+        const { email } = req.body;
+        try {
+            const user = await userModel.findOne({ email });
+            if (!user) {
+                const error = new Error('USER_NOT_FOUND');
+                return next(error);
+            }
+
+            // Generar un token de restablecimiento de contraseña
+            const resetToken = crypto.randomBytes(20).toString('hex');
+            const resetTokenExpires = Date.now() + 3600000; // 1 hora
+
+            // Guardar el token y la fecha de expiración en el usuario
+            user.resetPasswordToken = resetToken;
+            user.resetPasswordExpires = resetTokenExpires;
+            await user.save();
+
+            // Enviar correo electrónico con el token de restablecimiento
+            await sendPasswordResetEmail(email, resetToken);
+
+            res.status(200).json({ message: 'Correo de restablecimiento de contraseña enviado' });
+        } catch (error) {
+            error.code = 'INTERNAL_SERVER_ERROR';
+            next(error);
+        }
+    },
+
+    // Restablecer contraseña
+    resetPassword: async (req, res, next) => {
+        const { token } = req.params;
+        const { password } = req.body;
+        try {
+            const user = await userModel.findOne({
+                resetPasswordToken: token,
+                resetPasswordExpires: { $gt: Date.now() } // Verificar si el token no ha expirado
+            });
+
+            if (!user) {
+                const error = new Error('INVALID_OR_EXPIRED_TOKEN');
+                return next(error);
+            }
+
+            // Actualizar la contraseña del usuario
+            const hashedPassword = await hashPassword(password);
+            user.password = hashedPassword;
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+
+            res.status(200).json({ message: 'Contraseña restablecida correctamente' });
+        } catch (error) {
+            error.code = 'INTERNAL_SERVER_ERROR';
+            next(error);
+        }
+    }
+  
 };
 
 export default authController;
