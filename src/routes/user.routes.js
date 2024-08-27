@@ -16,4 +16,7 @@ router.delete('/user/:id', verifyToken, isAdmin, userController.deleteUser);
 // ruta para actualizar un usuario
 router.put('/user/:id', verifyToken, isAdmin, userController.updateUser);
 
+// Ruta para cambiar el rol de un usuario
+router.patch('/user/:id/rol', verifyToken, isAdmin, userController.cambiarRol);
+
 export default router;
