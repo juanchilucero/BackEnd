@@ -13,6 +13,7 @@ Este proyecto es un sistema de backend para la gestión de estacionamientos en u
 - [Uso](#uso)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Rutas API](#rutas-api)
+- [Actualizaciones Recientes](#actualizaciones-recientes)
 
 
 ## Características
@@ -117,4 +118,69 @@ El proyecto está organizado en la siguiente estructura de carpetas:
 Las rutas están protegidas por autenticación JWT y roles. Asegúrate de tener un token válido en las solicitudes.
 
 
+## Actualizaciones Recientes
+
+### Nuevo Rol de Usuario: "Premium"
+
+Se ha creado un nuevo rol de usuario denominado "premium". Los usuarios con este rol cuentan con el beneficio de un costo gratuito en el uso del servicio de cocheras.
+
+#### Beneficios:
+
+- Los usuarios "premium" no pagan por el uso de cocheras.
+
+### Cambiar Rol de Usuario
+
+Se ha añadido una nueva funcionalidad que permite a los administradores cambiar el rol de un usuario entre "visitante" y "premium". Esta funcionalidad es accesible a través de una nueva ruta en la API.
+
+#### Ruta: `PATCH /api/user/:id/rol`
+
+- **Descripción:** Esta ruta permite a los administradores cambiar el rol de un usuario especificado por su ID.
+
+#### Requisitos:
+
+- El usuario que realiza la solicitud debe tener el rol de `admin`.
+- La solicitud debe incluir un token de autenticación válido.
+
+#### Parámetros:
+
+- `id`: El ID del usuario cuyo rol se desea cambiar.
+
+#### Posibles Roles:
+
+- `visitante` → `premium`
+- `premium` → `visitante`
+
+### Eliminación de Tickets
+
+Se ha agregado una nueva ruta en la API para permitir la eliminación de tickets generados por el uso de una cochera. Solo los usuarios con rol de `admin` o `propietario` de la cochera pueden realizar esta acción.
+
+#### Ruta: `DELETE /api/ticket/:id`
+
+- **Descripción:** Esta ruta permite a los administradores y propietarios de cocheras eliminar un ticket especificado por su ID.
+
+#### Requisitos:
+
+- El usuario que realiza la solicitud debe tener el rol de `admin` o ser el propietario de la cochera relacionada con el ticket.
+- La solicitud debe incluir un token de autenticación válido.
+
+#### Parámetros:
+
+- `id`: El ID del ticket que se desea eliminar.
+
+### Recuperación de Contraseña
+
+Se han implementado nuevas rutas para la recuperación de contraseña, permitiendo a los usuarios solicitar un restablecimiento y establecer una nueva contraseña.
+
+#### Ruta: `POST /api/auth/forgot-password`
+
+- **Descripción:** Esta ruta permite a los usuarios solicitar un restablecimiento de contraseña enviando un correo electrónico con un enlace para restablecerla.
+
+#### Ruta: `POST /api/auth/reset-password/:token`
+
+- **Descripción:** Esta ruta permite a los usuarios restablecer su contraseña utilizando el token proporcionado en el enlace de restablecimiento recibido por correo electrónico.
+
+#### Requisitos:
+
+- El usuario debe proporcionar su dirección de correo electrónico en la solicitud de restablecimiento.
+- Para restablecer la contraseña, el usuario debe utilizar el token válido recibido por correo.
 

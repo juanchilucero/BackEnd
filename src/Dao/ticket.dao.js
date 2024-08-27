@@ -14,7 +14,11 @@ const ticketDao = {
         ticket.costo = costo;
         ticket.estado = 'finalizada';
         return await ticket.save();
-    }
+    },
+    eliminarTicket: async (tid) => {
+        return await Ticket.findByIdAndDelete(tid);
+    },
 };
 
 export default ticketDao;
+

@@ -43,7 +43,20 @@ const ticketController = {
         } catch (error) {
             next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
         }
-    }
+    },
+    eliminarTicket: async (req, res, next) => {
+        const { tid } = req.params;
+
+        try {
+            const ticket = await ticketDao.getTicketById(tid);
+            if (!ticket) return next({ code: 'TICKET_NOT_FOUND' });
+
+            await ticketDao.eliminarTicket(tid);
+            res.status(200).json({ message: 'Ticket eliminado con éxito' });
+        } catch (error) {
+            next({ code: 'INTERNAL_SERVER_ERROR', details: error.message });
+        }
+    },
 };
 
 export default ticketController;

@@ -57,7 +57,38 @@ const userController = {
       error.code = 'INTERNAL_SERVER_ERROR';
       next(error);
     }
-  }
+  },
+  
+  cambiarRol: async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        // Obtener el usuario por ID
+        const usuario = await userDao.getUserById(id);
+        if (!usuario) {
+            const error = new Error('USER_NOT_FOUND');
+            return next(error);
+        }
+
+        // Cambiar el rol del usuario
+        if (usuario.role === 'visitante') {
+            usuario.role = 'premium';
+        } else if (usuario.role === 'premium') {
+            usuario.role = 'visitante';
+        } else {
+            const error = new Error('USER_NOT_AUTHORIZED');
+            return next(error);
+        }
+
+        // Guardar el usuario con el nuevo rol
+        await usuario.save();
+
+        res.status(200).json({ message: `Rol cambiado a ${usuario.role} con éxito`, role: usuario.role });
+    } catch (error) {
+        error.code = 'INTERNAL_SERVER_ERROR';
+        next(error);
+    }
+}
 };
 
 export default userController;
